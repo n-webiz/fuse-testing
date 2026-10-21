@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Franpos Fuse Full Page</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .dashboard {
+        display: flex;
+        height: 100%;
+      }
+      #fundbox-app-wrapper {
+        border: 1px solid gray;
+        margin: 25px;
+        width: 90%;
+        height: 100vh;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div
+        id="fundbox-app-wrapper"
+        data-fundbox-id="CMGEFL24G9"
+        data-fundbox-domain="app-n-webiz-rde.fbx.im"
+        data-fundbox-campaign-source="franpos"
+      ></div>
+    </div>
+
+    <script>
+      function onFuseAPIReady() {
+        window.FbxFuseClient = new FbxFuse('CMGEFL24G9', {
+          container: document.querySelector('#fundbox-app-wrapper'),
+          events: {
+            onStateReady: function (e) {
+              console.log('Fundbox State Ready', e)
+              window.FbxFuseClient.open({})
+            },
+            onStateChange: function (e) {
+              console.log('Fundbox State Changed', e)
+            },
+          },
+        })
+      }
+    </script>
+    <!-- fuse.js from RDE; ?domain= sends the host iframe to local React shell -->
+    <script src="https://app-n-webiz-rde.fbx.im/static/dist/fuse/v1/fuse.js"></script>
+  </body>
+</html>
