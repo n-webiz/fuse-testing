@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fuse partner — GitHub Pages host</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .meta {
+        flex-shrink: 0;
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+        background: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+      }
+      .meta code {
+        font-size: 0.75rem;
+      }
+      .dashboard {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
+      #fundbox-app-wrapper {
+        border: 1px solid gray;
+        margin: 16px;
+        width: calc(100% - 32px);
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="meta" id="meta"></p>
+    <div class="dashboard">
+      <div id="fundbox-app-wrapper"></div>
+    </div>
+
+    <script>
+      /** Defaults match RDE Captain row for GitHub Pages (GET /fuse/v1/dev_partners). */
+      var DEFAULTS = {
+        partnerId: '2UPE4IM4QV',
+        appHost: 'app-n-webiz-rde.fbx.im',
+        partnerName: 'franpos',
+      }
+
+      function param(name, fallback) {
+        var q = new URLSearchParams(window.location.search)
+        var v = q.get(name)
+        return v != null && String(v).trim() !== '' ? String(v).trim() : fallback
+      }
+
+      function normalizeAppHost(raw) {
+        return String(raw || '')
+          .trim()
+          .replace(/^https?:\/\//i, '')
+          .replace(/\/+$/, '')
+      }
+
+      var partnerId = param('fuse_partner_id', param('partnerId', DEFAULTS.partnerId))
+      var appHost = normalizeAppHost(param('host', param('domain', DEFAULTS.appHost)))
+      var authToken = param('auth_token', '')
+      var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
+
+      var wrapper = document.querySelector('#fundbox-app-wrapper')
+      wrapper.setAttribute('data-fundbox-id', partnerId)
+      wrapper.setAttribute('data-fundbox-domain', appHost)
+      if (authToken) wrapper.setAttribute('data-fundbox-auth-token', authToken)
+      if (partnerUserId) wrapper.setAttribute('data-fundbox-partner-user-id', partnerUserId)
+
+      document.getElementById('meta').innerHTML =
+        'Fuse partner <strong>' +
+        param('name', DEFAULTS.partnerName) +
+        '</strong> (<code>' +
+        partnerId +
+        '</code>) · app host <code>' +
+        appHost +
+        '</code> · parent <code>' +
+        window.location.origin +
+        window.location.pathname +
+        '</code>'
+
+      function onFuseAPIReady() {
+        window.FbxFuseClient = new FbxFuse(partnerId, {
+          container: wrapper,
+          events: {
+            onStateReady: function (e) {
+              console.log('Fundbox State Ready', e)
+              window.FbxFuseClient.open({})
+            },
+            onStateChange: function (e) {
+              console.log('Fundbox State Changed', e)
+            },
+          },
+        })
+      }
+
+      var fuseScript = document.createElement('script')
+      fuseScript.src =
+        'https://' +
+        appHost +
+        '/static/dist/fuse/v1/fuse.js?domain=' +
+        encodeURIComponent(appHost)
+      document.body.appendChild(fuseScript)
+    </script>
+  </body>
+</html>
