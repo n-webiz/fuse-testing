@@ -47,15 +47,17 @@
       /**
        * Fuse partner test page (GitHub Pages or Live Server).
        *
-       * Default: load fuse.js from and embed against https://n-research.fbx.im/
+       * Research RDE uses two hostnames:
+       *   app-n-research.fbx.im — static fuse.js (/static/dist/fuse/v1/fuse.js)
+       *   n-research.fbx.im     — fuse_app iframe target (?domain=…)
        *
        * Query params:
        *   stack=react-local | rde | rde-react
-       *     (default: rde → research host below)
+       *     (default: rde)
        *     rde-react = same as rde&fbxForce=react
-       *   host / domain             App hostname (default n-research.fbx.im)
+       *   host / domain             fuse.js ?domain= embed host (default n-research.fbx.im)
        *   reactDomain / reactPort   React shell host (stack=react-local only)
-       *   fuseScriptOrigin          fuse.js origin (stack=react-local only)
+       *   fuseScriptOrigin          Where fuse.js is loaded from (default app-n-research on rde)
        *   fbxForce=react|legacy     Ask the edge router for React vs legacy
        *   fuse_partner_id, auth_token, partner_user_id, name — partner context
        *
@@ -67,6 +69,7 @@
         partnerName: 'franpos',
         reactAppDomain: 'localhost:3000',
         fuseScriptOriginLocal: 'https://app-local.fbx.im:4505',
+        fuseScriptOriginRde: 'https://app-n-research.fbx.im',
       }
 
       function param(name, fallback) {
@@ -80,6 +83,12 @@
           .trim()
           .replace(/^https?:\/\//i, '')
           .replace(/\/+$/, '')
+      }
+
+      function ensureHttpsOrigin(raw) {
+        var trimmed = String(raw || '').trim().replace(/\/+$/, '')
+        if (/^https?:\/\//i.test(trimmed)) return trimmed
+        return 'https://' + normalizeAppHost(trimmed)
       }
 
       function readReactAppDomain() {
@@ -115,15 +124,14 @@
       var fuseScriptOrigin
       if (stack === 'react-local') {
         fuseScriptDomain = readReactAppDomain()
-        fuseScriptOrigin = normalizeAppHost(
+        fuseScriptOrigin = ensureHttpsOrigin(
           param('fuseScriptOrigin', DEFAULTS.fuseScriptOriginLocal),
         )
-        if (!/^https?:\/\//i.test(fuseScriptOrigin)) {
-          fuseScriptOrigin = 'https://' + fuseScriptOrigin
-        }
       } else {
         fuseScriptDomain = appHost
-        fuseScriptOrigin = 'https://' + appHost
+        fuseScriptOrigin = ensureHttpsOrigin(
+          param('fuseScriptOrigin', DEFAULTS.fuseScriptOriginRde),
+        )
       }
 
       document.getElementById('meta').innerHTML =
@@ -133,8 +141,10 @@
         partnerId +
         '</code>) · stack <code>' +
         stack +
-        '</code> · fuse target <code>' +
+        '</code> · embed <code>' +
         fuseScriptDomain +
+        '</code> · fuse.js from <code>' +
+        fuseScriptOrigin +
         '</code> · parent <code>' +
         window.location.origin +
         window.location.pathname +
