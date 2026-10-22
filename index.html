@@ -34,14 +34,22 @@
         min-width: 200px;
         min-height: 60px;
       }
+      .hint {
+        flex-shrink: 0;
+        margin: 0;
+        padding: 0.5rem 1rem 0;
+        font-size: 0.875rem;
+        color: #444;
+      }
     </style>
   </head>
   <body>
     <p class="meta" id="meta"></p>
+    <p class="hint">Click the Fundbox widget below to open Fuse.</p>
     <div class="dashboard">
       <div
         id="fundbox-fuse-button"
-        data-fundbox-id="2UPE4IM4Q5"
+        data-fundbox-id="WCAQEWAT6K"
       ></div>
     </div>
 
@@ -49,7 +57,8 @@
       /**
        * Fuse partner test page (GitHub Pages or Live Server) — n-testing RDE, button API.
        *
-       *   app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-testing.fbx.im
+       *   app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js
+       *   (no ?domain= — n-testing.fbx.im /fuse/v1/* redirects to signup and breaks GitHub Pages embeds)
        *
        * Mount #fundbox-fuse-button; fuse.js injects the widget iframe and full-page fuse_app
        * overlay when the user clicks the button.
@@ -57,7 +66,7 @@
        * Query params (optional): fuse_partner_id, auth_token, partner_user_id, name,
        * fbxForce=react|legacy
        */
-      var DEFAULT_PARTNER_ID = '2UPE4IM4Q5'
+      var DEFAULT_PARTNER_ID = 'WCAQEWAT6K'
       var DEFAULT_PARTNER_NAME = 'franpos'
       var EMBED_HOST = 'n-testing.fbx.im'
       var FUSE_SCRIPT_ORIGIN = 'https://app-n-testing.fbx.im'
@@ -97,6 +106,6 @@
         window.location.pathname +
         '</code>'
     </script>
-    <script src="https://app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-testing.fbx.im"></script>
+    <script src="https://app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js"></script>
   </body>
 </html>
