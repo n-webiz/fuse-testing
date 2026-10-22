@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Franpos Fuse Full Page (Research)</title>
+    <title>Franpos Fuse Full Page (n-testing)</title>
     <style>
       body {
         margin: 0;
@@ -32,10 +32,10 @@
 
     <script>
       /**
-       * Same fuse bootstrap as index.html — research RDE only.
+       * Same fuse bootstrap as index.html — n-testing RDE only.
        * See index.html for query param list.
        */
-      var RESEARCH = {
+      var N_TESTING = {
         embedHost: 'n-testing.fbx.im',
         fuseScriptOrigin: 'https://app-n-testing.fbx.im',
       }
@@ -65,9 +65,9 @@
       }
 
       var partnerId = param('fuse_partner_id', param('partnerId', DEFAULTS.partnerId))
-      var embedHost = normalizeAppHost(param('host', param('domain', RESEARCH.embedHost)))
+      var embedHost = normalizeAppHost(param('host', param('domain', N_TESTING.embedHost)))
       var fuseScriptOrigin = ensureHttpsOrigin(
-        param('fuseScriptOrigin', RESEARCH.fuseScriptOrigin),
+        param('fuseScriptOrigin', N_TESTING.fuseScriptOrigin),
       )
       var authToken = param('auth_token', '')
       var partnerUserId = param('partner_user_id', param('partnerUserId', ''))

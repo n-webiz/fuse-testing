@@ -45,7 +45,7 @@
 
     <script>
       /**
-       * Fuse partner test page (GitHub Pages or Live Server) — research RDE only.
+       * Fuse partner test page (GitHub Pages or Live Server) — n-testing RDE only.
        *
        *   app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-testing.fbx.im
        *
@@ -55,7 +55,7 @@
        *   fuseScriptOrigin      fuse.js origin (default https://app-n-testing.fbx.im)
        *   fbxForce=react|legacy edge router hint on fuse_app
        */
-      var RESEARCH = {
+      var N_TESTING = {
         embedHost: 'n-testing.fbx.im',
         fuseScriptOrigin: 'https://app-n-testing.fbx.im',
       }
@@ -85,9 +85,9 @@
       }
 
       var partnerId = param('fuse_partner_id', param('partnerId', DEFAULTS.partnerId))
-      var embedHost = normalizeAppHost(param('host', param('domain', RESEARCH.embedHost)))
+      var embedHost = normalizeAppHost(param('host', param('domain', N_TESTING.embedHost)))
       var fuseScriptOrigin = ensureHttpsOrigin(
-        param('fuseScriptOrigin', RESEARCH.fuseScriptOrigin),
+        param('fuseScriptOrigin', N_TESTING.fuseScriptOrigin),
       )
       var authToken = param('auth_token', '')
       var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
