@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Franpos Fuse Full Page (n-testing)</title>
     <style>
+      html,
       body {
+        height: 100%;
         margin: 0;
+      }
+      body {
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
@@ -20,12 +24,22 @@
       .dashboard {
         display: flex;
         flex: 1;
-        align-items: flex-start;
-        padding: 25px;
+        min-height: 0;
+        padding: 16px 25px 25px;
+        box-sizing: border-box;
       }
       #fundbox-fuse-button {
-        min-width: 200px;
-        min-height: 60px;
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+        position: relative;
+      }
+      #fundbox-fuse-button iframe#fundbox-fuse-button-iframe {
+        position: absolute;
+        inset: 0;
+        width: 100% !important;
+        height: 100% !important;
+        border: 0;
       }
     </style>
   </head>
