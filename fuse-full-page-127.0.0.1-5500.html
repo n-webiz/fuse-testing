@@ -10,25 +10,24 @@
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
-        height: 100vh;
+        min-height: 100vh;
       }
       .dashboard {
         display: flex;
-        height: 100%;
+        flex: 1;
+        align-items: flex-start;
+        padding: 25px;
       }
-      #fundbox-app-wrapper {
-        border: 1px solid gray;
-        margin: 25px;
-        width: 90%;
-        height: 100vh;
-        overflow: auto;
+      #fundbox-fuse-button {
+        min-width: 200px;
+        min-height: 60px;
       }
     </style>
   </head>
   <body>
     <div class="dashboard">
       <div
-        id="fundbox-app-wrapper"
+        id="fundbox-fuse-button"
         data-fundbox-id="2UPE4IM4Q5"
       ></div>
     </div>
@@ -42,34 +41,19 @@
         return v != null && String(v).trim() !== '' ? String(v).trim() : fallback
       }
 
-      var wrapper = document.querySelector('#fundbox-app-wrapper')
+      var fuseButton = document.querySelector('#fundbox-fuse-button')
       var partnerId = param('fuse_partner_id', param('partnerId', DEFAULT_PARTNER_ID))
-      wrapper.setAttribute('data-fundbox-id', partnerId)
+      fuseButton.setAttribute('data-fundbox-id', partnerId)
 
       var authToken = param('auth_token', '')
-      if (authToken) wrapper.setAttribute('data-fundbox-auth-token', authToken)
+      if (authToken) fuseButton.setAttribute('data-fundbox-auth-token', authToken)
 
       var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
-      wrapper.setAttribute('data-fundbox-partner-user-id', partnerUserId)
+      if (partnerUserId) fuseButton.setAttribute('data-fundbox-partner-user-id', partnerUserId)
 
       var fbxForce = param('fbxForce', param('fbx_force', ''))
       if (fbxForce === 'react' || fbxForce === 'legacy') {
-        wrapper.setAttribute('data-fundbox-fbx-force', fbxForce)
-      }
-
-      function onFuseAPIReady() {
-        window.FbxFuseClient = new FbxFuse(partnerId, {
-          container: wrapper,
-          events: {
-            onStateReady: function (e) {
-              console.log('Fundbox State Ready', e)
-              window.FbxFuseClient.open({})
-            },
-            onStateChange: function (e) {
-              console.log('Fundbox State Changed', e)
-            },
-          },
-        })
+        fuseButton.setAttribute('data-fundbox-fbx-force', fbxForce)
       }
     </script>
     <script src="https://app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-testing.fbx.im"></script>
