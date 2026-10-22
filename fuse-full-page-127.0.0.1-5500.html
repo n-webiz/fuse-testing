@@ -5,36 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Franpos Fuse Full Page (n-testing)</title>
     <style>
+      html,
       body {
+        height: 100%;
         margin: 0;
+      }
+      body {
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        overflow: hidden;
       }
-      .hint {
-        padding: 1rem 25px 0;
-        font-size: 0.875rem;
-        color: #444;
+      .toolbar {
+        flex-shrink: 0;
+        padding: 1rem 25px;
+        border-bottom: 1px solid #eee;
+      }
+      .toolbar button {
+        font: inherit;
+        padding: 0.4rem 0.75rem;
+        cursor: pointer;
       }
       .dashboard {
         display: flex;
         flex: 1;
-        align-items: flex-start;
-        padding: 25px;
+        min-height: 0;
+        padding: 16px 25px 25px;
       }
-      #fundbox-fuse-button {
-        min-width: 200px;
-        min-height: 60px;
+      #fundbox-app-wrapper {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ccc;
+        overflow: hidden;
+      }
+      #fundbox-app-wrapper > iframe#fundbox-fuse-app {
+        position: absolute;
+        inset: 0;
+        width: 100% !important;
+        height: 100% !important;
+        border: 0;
       }
     </style>
   </head>
   <body>
-    <p class="hint">Click the Fundbox widget below to open Fuse (n-testing RDE, button API).</p>
+    <div class="toolbar">
+      <button type="button" id="open-fuse">Open Fuse</button>
+    </div>
     <div class="dashboard">
       <div
-        id="fundbox-fuse-button"
+        id="fundbox-app-wrapper"
         data-fundbox-id="WCAQEWAT6K"
+        data-fundbox-partner-user-id=""
       ></div>
     </div>
 
@@ -47,19 +72,42 @@
         return v != null && String(v).trim() !== '' ? String(v).trim() : fallback
       }
 
-      var fuseButton = document.querySelector('#fundbox-fuse-button')
+      var wrapper = document.querySelector('#fundbox-app-wrapper')
       var partnerId = param('fuse_partner_id', param('partnerId', DEFAULT_PARTNER_ID))
-      fuseButton.setAttribute('data-fundbox-id', partnerId)
+      wrapper.setAttribute('data-fundbox-id', partnerId)
 
       var authToken = param('auth_token', '')
-      if (authToken) fuseButton.setAttribute('data-fundbox-auth-token', authToken)
+      if (authToken) wrapper.setAttribute('data-fundbox-auth-token', authToken)
 
       var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
-      if (partnerUserId) fuseButton.setAttribute('data-fundbox-partner-user-id', partnerUserId)
+      wrapper.setAttribute('data-fundbox-partner-user-id', partnerUserId)
 
       var fbxForce = param('fbxForce', param('fbx_force', ''))
       if (fbxForce === 'react' || fbxForce === 'legacy') {
-        fuseButton.setAttribute('data-fundbox-fbx-force', fbxForce)
+        wrapper.setAttribute('data-fundbox-fbx-force', fbxForce)
+      }
+
+      function openFusePanel() {
+        if (window.FbxFuseClient) {
+          window.FbxFuseClient.open({})
+        }
+      }
+
+      document.getElementById('open-fuse').addEventListener('click', openFusePanel)
+
+      function onFuseAPIReady() {
+        window.FbxFuseClient = new FbxFuse(partnerId, {
+          container: wrapper,
+          events: {
+            onStateReady: function (e) {
+              console.log('Fundbox State Ready', e)
+              openFusePanel()
+            },
+            onStateChange: function (e) {
+              console.log('Fundbox State Changed', e)
+            },
+          },
+        })
       }
     </script>
     <script src="https://app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js"></script>
