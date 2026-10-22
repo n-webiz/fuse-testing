@@ -40,30 +40,25 @@
   <body>
     <p class="meta" id="meta"></p>
     <div class="dashboard">
-      <div id="fundbox-app-wrapper"></div>
+      <div
+        id="fundbox-app-wrapper"
+        data-fundbox-id="2UPE4IM4Q5"
+      ></div>
     </div>
 
     <script>
       /**
-       * Fuse partner test page (GitHub Pages or Live Server) — n-testing RDE only.
+       * Fuse partner test page (GitHub Pages or Live Server) — n-testing RDE.
        *
        *   app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-testing.fbx.im
        *
-       * Query params (optional):
-       *   fuse_partner_id, auth_token, partner_user_id, name
-       *   host / domain         embed host (default n-testing.fbx.im)
-       *   fuseScriptOrigin      fuse.js origin (default https://app-n-testing.fbx.im)
-       *   fbxForce=react|legacy edge router hint on fuse_app
+       * Query params (optional): fuse_partner_id, auth_token, partner_user_id, name,
+       * fbxForce=react|legacy
        */
-      var N_TESTING = {
-        embedHost: 'n-testing.fbx.im',
-        fuseScriptOrigin: 'https://app-n-testing.fbx.im',
-      }
-
-      var DEFAULTS = {
-        partnerId: 'WCAQEWAT6K',
-        partnerName: 'franpos',
-      }
+      var DEFAULT_PARTNER_ID = '2UPE4IM4Q5'
+      var DEFAULT_PARTNER_NAME = 'franpos'
+      var EMBED_HOST = 'n-testing.fbx.im'
+      var FUSE_SCRIPT_ORIGIN = 'https://app-n-testing.fbx.im'
 
       function param(name, fallback) {
         var q = new URLSearchParams(window.location.search)
@@ -71,45 +66,30 @@
         return v != null && String(v).trim() !== '' ? String(v).trim() : fallback
       }
 
-      function normalizeAppHost(raw) {
-        return String(raw || '')
-          .trim()
-          .replace(/^https?:\/\//i, '')
-          .replace(/\/+$/, '')
-      }
-
-      function ensureHttpsOrigin(raw) {
-        var trimmed = String(raw || '').trim().replace(/\/+$/, '')
-        if (/^https?:\/\//i.test(trimmed)) return trimmed
-        return 'https://' + normalizeAppHost(trimmed)
-      }
-
-      var partnerId = param('fuse_partner_id', param('partnerId', DEFAULTS.partnerId))
-      var embedHost = normalizeAppHost(param('host', param('domain', N_TESTING.embedHost)))
-      var fuseScriptOrigin = ensureHttpsOrigin(
-        param('fuseScriptOrigin', N_TESTING.fuseScriptOrigin),
-      )
-      var authToken = param('auth_token', '')
-      var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
-      var fbxForce = param('fbxForce', param('fbx_force', ''))
-
       var wrapper = document.querySelector('#fundbox-app-wrapper')
+      var partnerId = param('fuse_partner_id', param('partnerId', DEFAULT_PARTNER_ID))
       wrapper.setAttribute('data-fundbox-id', partnerId)
+
+      var authToken = param('auth_token', '')
       if (authToken) wrapper.setAttribute('data-fundbox-auth-token', authToken)
-      if (partnerUserId) wrapper.setAttribute('data-fundbox-partner-user-id', partnerUserId)
+
+      var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
+      wrapper.setAttribute('data-fundbox-partner-user-id', partnerUserId)
+
+      var fbxForce = param('fbxForce', param('fbx_force', ''))
       if (fbxForce === 'react' || fbxForce === 'legacy') {
         wrapper.setAttribute('data-fundbox-fbx-force', fbxForce)
       }
 
       document.getElementById('meta').innerHTML =
         'Fuse partner <strong>' +
-        param('name', DEFAULTS.partnerName) +
+        param('name', DEFAULT_PARTNER_NAME) +
         '</strong> (<code>' +
         partnerId +
         '</code>) · embed <code>' +
-        embedHost +
+        EMBED_HOST +
         '</code> · fuse.js from <code>' +
-        fuseScriptOrigin +
+        FUSE_SCRIPT_ORIGIN +
         '</code> · parent <code>' +
         window.location.origin +
         window.location.pathname +
@@ -129,16 +109,7 @@
           },
         })
       }
-
-      var fuseScript = document.createElement('script')
-      fuseScript.src =
-        fuseScriptOrigin +
-        '/static/dist/fuse/v1/fuse.js?domain=' +
-        encodeURIComponent(embedHost)
-      fuseScript.onerror = function () {
-        console.error('[fuse-testing] Failed to load fuse.js from', fuseScript.src)
-      }
-      document.body.appendChild(fuseScript)
     </script>
+    <script src="https://app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-testing.fbx.im"></script>
   </body>
 </html>
