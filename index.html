@@ -45,31 +45,24 @@
 
     <script>
       /**
-       * Fuse partner test page (GitHub Pages or Live Server).
+       * Fuse partner test page (GitHub Pages or Live Server) — research RDE only.
        *
-       * Research RDE uses two hostnames:
-       *   app-n-research.fbx.im — static fuse.js (/static/dist/fuse/v1/fuse.js)
-       *   n-research.fbx.im     — fuse_app iframe target (?domain=…)
+       *   app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-testing.fbx.im
        *
-       * Query params:
-       *   stack=react-local | rde | rde-react
-       *     (default: rde)
-       *     rde-react = same as rde&fbxForce=react
-       *   host / domain             fuse.js ?domain= embed host (default n-research.fbx.im)
-       *   reactDomain / reactPort   React shell host (stack=react-local only)
-       *   fuseScriptOrigin          Where fuse.js is loaded from (default app-n-research on rde)
-       *   fbxForce=react|legacy     Ask the edge router for React vs legacy
-       *   fuse_partner_id, auth_token, partner_user_id, name — partner context
-       *
-       * Local React stack: frontend-react/docs/FUSE_LEGACY_LOCAL_DEV.md
+       * Query params (optional):
+       *   fuse_partner_id, auth_token, partner_user_id, name
+       *   host / domain         embed host (default n-testing.fbx.im)
+       *   fuseScriptOrigin      fuse.js origin (default https://app-n-testing.fbx.im)
+       *   fbxForce=react|legacy edge router hint on fuse_app
        */
+      var RESEARCH = {
+        embedHost: 'n-testing.fbx.im',
+        fuseScriptOrigin: 'https://app-n-testing.fbx.im',
+      }
+
       var DEFAULTS = {
-        partnerId: '2UPE4IM4Q5',
-        appHost: 'n-research.fbx.im',
+        partnerId: 'WCAQEWAT6K',
         partnerName: 'franpos',
-        reactAppDomain: 'localhost:3000',
-        fuseScriptOriginLocal: 'https://app-local.fbx.im:4505',
-        fuseScriptOriginRde: 'https://app-n-research.fbx.im',
       }
 
       function param(name, fallback) {
@@ -91,26 +84,14 @@
         return 'https://' + normalizeAppHost(trimmed)
       }
 
-      function readReactAppDomain() {
-        var fromDomain = param('reactDomain', '')
-        if (fromDomain) return normalizeAppHost(fromDomain)
-        var fromPort = param('reactPort', '')
-        if (fromPort) return 'localhost:' + fromPort
-        return DEFAULTS.reactAppDomain
-      }
-
-      var stack = param('stack', 'rde')
       var partnerId = param('fuse_partner_id', param('partnerId', DEFAULTS.partnerId))
-      var appHost = normalizeAppHost(param('host', param('domain', DEFAULTS.appHost)))
+      var embedHost = normalizeAppHost(param('host', param('domain', RESEARCH.embedHost)))
+      var fuseScriptOrigin = ensureHttpsOrigin(
+        param('fuseScriptOrigin', RESEARCH.fuseScriptOrigin),
+      )
       var authToken = param('auth_token', '')
       var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
       var fbxForce = param('fbxForce', param('fbx_force', ''))
-      if (stack === 'rde-react') {
-        stack = 'rde'
-        if (fbxForce !== 'react' && fbxForce !== 'legacy') {
-          fbxForce = 'react'
-        }
-      }
 
       var wrapper = document.querySelector('#fundbox-app-wrapper')
       wrapper.setAttribute('data-fundbox-id', partnerId)
@@ -120,29 +101,13 @@
         wrapper.setAttribute('data-fundbox-fbx-force', fbxForce)
       }
 
-      var fuseScriptDomain
-      var fuseScriptOrigin
-      if (stack === 'react-local') {
-        fuseScriptDomain = readReactAppDomain()
-        fuseScriptOrigin = ensureHttpsOrigin(
-          param('fuseScriptOrigin', DEFAULTS.fuseScriptOriginLocal),
-        )
-      } else {
-        fuseScriptDomain = appHost
-        fuseScriptOrigin = ensureHttpsOrigin(
-          param('fuseScriptOrigin', DEFAULTS.fuseScriptOriginRde),
-        )
-      }
-
       document.getElementById('meta').innerHTML =
         'Fuse partner <strong>' +
         param('name', DEFAULTS.partnerName) +
         '</strong> (<code>' +
         partnerId +
-        '</code>) · stack <code>' +
-        stack +
-        '</code> · embed <code>' +
-        fuseScriptDomain +
+        '</code>) · embed <code>' +
+        embedHost +
         '</code> · fuse.js from <code>' +
         fuseScriptOrigin +
         '</code> · parent <code>' +
@@ -169,15 +134,9 @@
       fuseScript.src =
         fuseScriptOrigin +
         '/static/dist/fuse/v1/fuse.js?domain=' +
-        encodeURIComponent(fuseScriptDomain)
+        encodeURIComponent(embedHost)
       fuseScript.onerror = function () {
-        console.error(
-          '[fuse-testing] Failed to load fuse.js from',
-          fuseScript.src,
-          stack === 'react-local'
-            ? '— run `npm run dev:fuse` in frontend/ and `yarn dev:fundbox` in frontend-react/'
-            : '',
-        )
+        console.error('[fuse-testing] Failed to load fuse.js from', fuseScript.src)
       }
       document.body.appendChild(fuseScript)
     </script>

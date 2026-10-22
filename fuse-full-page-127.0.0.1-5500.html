@@ -27,17 +27,63 @@
   </head>
   <body>
     <div class="dashboard">
-      <div
-        id="fundbox-app-wrapper"
-        data-fundbox-id="2UPE4IM4Q5"
-        data-fundbox-partner-user-id=""
-      ></div>
+      <div id="fundbox-app-wrapper"></div>
     </div>
 
     <script>
+      /**
+       * Same fuse bootstrap as index.html — research RDE only.
+       * See index.html for query param list.
+       */
+      var RESEARCH = {
+        embedHost: 'n-testing.fbx.im',
+        fuseScriptOrigin: 'https://app-n-testing.fbx.im',
+      }
+
+      var DEFAULTS = {
+        partnerId: 'WCAQEWAT6K',
+        partnerName: 'franpos',
+      }
+
+      function param(name, fallback) {
+        var q = new URLSearchParams(window.location.search)
+        var v = q.get(name)
+        return v != null && String(v).trim() !== '' ? String(v).trim() : fallback
+      }
+
+      function normalizeAppHost(raw) {
+        return String(raw || '')
+          .trim()
+          .replace(/^https?:\/\//i, '')
+          .replace(/\/+$/, '')
+      }
+
+      function ensureHttpsOrigin(raw) {
+        var trimmed = String(raw || '').trim().replace(/\/+$/, '')
+        if (/^https?:\/\//i.test(trimmed)) return trimmed
+        return 'https://' + normalizeAppHost(trimmed)
+      }
+
+      var partnerId = param('fuse_partner_id', param('partnerId', DEFAULTS.partnerId))
+      var embedHost = normalizeAppHost(param('host', param('domain', RESEARCH.embedHost)))
+      var fuseScriptOrigin = ensureHttpsOrigin(
+        param('fuseScriptOrigin', RESEARCH.fuseScriptOrigin),
+      )
+      var authToken = param('auth_token', '')
+      var partnerUserId = param('partner_user_id', param('partnerUserId', ''))
+      var fbxForce = param('fbxForce', param('fbx_force', ''))
+
+      var wrapper = document.querySelector('#fundbox-app-wrapper')
+      wrapper.setAttribute('data-fundbox-id', partnerId)
+      if (authToken) wrapper.setAttribute('data-fundbox-auth-token', authToken)
+      if (partnerUserId) wrapper.setAttribute('data-fundbox-partner-user-id', partnerUserId)
+      if (fbxForce === 'react' || fbxForce === 'legacy') {
+        wrapper.setAttribute('data-fundbox-fbx-force', fbxForce)
+      }
+
       function onFuseAPIReady() {
-        window.FbxFuseClient = new FbxFuse('2UPE4IM4Q5', {
-          container: document.querySelector('#fundbox-app-wrapper'),
+        window.FbxFuseClient = new FbxFuse(partnerId, {
+          container: wrapper,
           events: {
             onStateReady: function (e) {
               console.log('Fundbox State Ready', e)
@@ -49,8 +95,16 @@
           },
         })
       }
+
+      var fuseScript = document.createElement('script')
+      fuseScript.src =
+        fuseScriptOrigin +
+        '/static/dist/fuse/v1/fuse.js?domain=' +
+        encodeURIComponent(embedHost)
+      fuseScript.onerror = function () {
+        console.error('[fuse-testing] Failed to load fuse.js from', fuseScript.src)
+      }
+      document.body.appendChild(fuseScript)
     </script>
-    <!-- fuse.js on app-n-research; iframe ?domain= n-research (fuse_app) -->
-    <script src="https://app-n-research.fbx.im/static/dist/fuse/v1/fuse.js?domain=n-research.fbx.im"></script>
   </body>
 </html>
