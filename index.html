@@ -47,27 +47,23 @@
       /**
        * Fuse partner test page (GitHub Pages or Live Server).
        *
-       * React vs legacy Vue/Django fuse container is NOT chosen in Django — Django always
-       * serves the legacy fuse_app template when hit directly. Production/RDE picks React via
-       * the Cloudflare frontend-router on `/fuse/v1/fuse_app` (FUSE_PARTNER_ROLLOUT or
-       * `fbx_force=react`). Local React uses the Fundbox shell (`yarn dev:fundbox`) as the
-       * fuse.js `domain` target; Vite serves `/fuse/v1/fuse_app` as React.
+       * Default: load fuse.js from and embed against https://app-n-research.fbx.im/
        *
        * Query params:
        *   stack=react-local | rde | rde-react
-       *     (default: react-local on localhost/127.0.0.1 incl. http://localhost:3000, else rde)
-       *     rde-react = GitHub Pages + React container on RDE (same as rde&fbxForce=react)
-       *   host / domain             RDE app hostname (stack=rde)
-       *   reactDomain / reactPort   React shell host (stack=react-local), e.g. localhost:3000
-       *   fuseScriptOrigin          Where fuse.js is loaded from (default: app-local:4505 or RDE)
-       *   fbxForce=react|legacy     On stack=rde, ask the edge router for React (needs fuse.js with fbx_force support)
+       *     (default: rde → research host below)
+       *     rde-react = same as rde&fbxForce=react
+       *   host / domain             App hostname (default app-n-research.fbx.im)
+       *   reactDomain / reactPort   React shell host (stack=react-local only)
+       *   fuseScriptOrigin          fuse.js origin (stack=react-local only)
+       *   fbxForce=react|legacy     Ask the edge router for React vs legacy
        *   fuse_partner_id, auth_token, partner_user_id, name — partner context
        *
-       * Docs: frontend-react/docs/FUSE_LEGACY_LOCAL_DEV.md
+       * Local React stack: frontend-react/docs/FUSE_LEGACY_LOCAL_DEV.md
        */
       var DEFAULTS = {
         partnerId: '2UPE4IM4Q5',
-        appHost: 'app-n-webiz-rde.fbx.im',
+        appHost: 'app-n-research.fbx.im',
         partnerName: 'franpos',
         reactAppDomain: 'localhost:3000',
         fuseScriptOriginLocal: 'https://app-local.fbx.im:4505',
@@ -86,11 +82,6 @@
           .replace(/\/+$/, '')
       }
 
-      /** True for Live Server / Vite partner pages (e.g. http://127.0.0.1:5500, http://localhost:3000). */
-      function isLocalPartnerOrigin() {
-        return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(window.location.origin)
-      }
-
       function readReactAppDomain() {
         var fromDomain = param('reactDomain', '')
         if (fromDomain) return normalizeAppHost(fromDomain)
@@ -99,10 +90,7 @@
         return DEFAULTS.reactAppDomain
       }
 
-      var stack = param(
-        'stack',
-        isLocalPartnerOrigin() ? 'react-local' : 'rde',
-      )
+      var stack = param('stack', 'rde')
       var partnerId = param('fuse_partner_id', param('partnerId', DEFAULTS.partnerId))
       var appHost = normalizeAppHost(param('host', param('domain', DEFAULTS.appHost)))
       var authToken = param('auth_token', '')
