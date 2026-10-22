@@ -55,7 +55,7 @@
        *
        * Query params:
        *   stack=react-local | rde | rde-react
-       *     (default: react-local on localhost/127.0.0.1, else rde)
+       *     (default: react-local on localhost/127.0.0.1 incl. http://localhost:3000, else rde)
        *     rde-react = GitHub Pages + React container on RDE (same as rde&fbxForce=react)
        *   host / domain             RDE app hostname (stack=rde)
        *   reactDomain / reactPort   React shell host (stack=react-local), e.g. localhost:3000
@@ -86,6 +86,7 @@
           .replace(/\/+$/, '')
       }
 
+      /** True for Live Server / Vite partner pages (e.g. http://127.0.0.1:5500, http://localhost:3000). */
       function isLocalPartnerOrigin() {
         return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(window.location.origin)
       }
