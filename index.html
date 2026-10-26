@@ -66,6 +66,10 @@
       /**
        * Fuse partner test page (GitHub Pages or Live Server) — n-testing RDE, button API.
        *
+       *   app-n-webiz.fbx.im/static/dist/fuse/v1/fuse.js
+       *   (no ?domain= — app-n-webiz.fbx.im /fuse/v1/* redirects to signup and breaks GitHub Pages embeds)
+       *
+       * Previously (commented out):
        *   app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js
        *   (no ?domain= — n-testing.fbx.im /fuse/v1/* redirects to signup and breaks GitHub Pages embeds)
        *
@@ -77,8 +81,10 @@
        */
       var DEFAULT_PARTNER_ID = 'WCAQEWAT6K'
       var DEFAULT_PARTNER_NAME = 'franpos'
-      var EMBED_HOST = 'n-testing.fbx.im'
-      var FUSE_SCRIPT_ORIGIN = 'https://app-n-testing.fbx.im'
+      // var EMBED_HOST = 'n-testing.fbx.im'
+      // var FUSE_SCRIPT_ORIGIN = 'https://app-n-testing.fbx.im'
+      var EMBED_HOST = 'app-n-webiz-rde.fbx.im'
+      var FUSE_SCRIPT_ORIGIN = 'https://app-n-webiz-rde.fbx.im'
 
       function param(name, fallback) {
         var q = new URLSearchParams(window.location.search)
@@ -115,6 +121,7 @@
         window.location.pathname +
         '</code>'
     </script>
-    <script src="https://app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js"></script>
+    <!-- <script src="https://app-n-testing.fbx.im/static/dist/fuse/v1/fuse.js"></script> -->
+    <script src="https://app-n-webiz-rde.fbx.im/static/dist/fuse/v1/fuse.js"></script>
   </body>
 </html>
